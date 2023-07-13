@@ -1,16 +1,9 @@
 import cv2 as ocv
 import numpy as np
-import time
 
-
-previousTime = 0
-currentTime = 0
-cap = ocv.VideoCapture(1)
-
-while True:
-    success, image = cap.read()
-
- # convert the input image to the HSV color space
+    
+# runPipeline() is called every frame by Limelight's backend.
+def runPipeline(image, llrobot):
     img_hsv = ocv.cvtColor(image, ocv.COLOR_BGR2HSV)
     # convert the hsv to a binary image by removing any pixels
     # that do not fall within the following HSV Min/Max values
@@ -43,12 +36,11 @@ while True:
         llpython = [1,x,y,w,h,9,8,7]
 
     #return the largest contour for the LL crosshair, the modified image, and custom robot data
-    # print("Largest Contour:"+str(largestContour))
+    print("Largest Contour:"+str(largestContour))
     print("llpython:"+str(llpython))
-
-    currentTime = time.time()
-    fps = 1 / (currentTime - previousTime)
-    previousTime = currentTime
-    ocv.putText(image, str(round(fps)) + " fps", (20, 70), ocv.FONT_HERSHEY_PLAIN, 1.5, (253, 253, 253), 1)  # image, text, pos (x, y), font, scale, color, thickness)
-    ocv.imshow("Limelight ocv test (CPU) Preview", image)
-    ocv.waitKey(1)
+       
+    # make sure to return a contour,
+    # an image to stream,
+    # and optionally an array of up to 8 values for the "llpython"
+    # networktables array
+    return largestContour, image, llpython
